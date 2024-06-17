@@ -1,0 +1,12 @@
+/home/claudio/raspberry_prisma_walker/build/CMakeFiles/prisma_walker.dir
+/home/claudio/raspberry_prisma_walker/build/CMakeFiles/edit_cache.dir
+/home/claudio/raspberry_prisma_walker/build/CMakeFiles/rebuild_cache.dir
+/home/claudio/raspberry_prisma_walker/build/pybind11/CMakeFiles/edit_cache.dir
+/home/claudio/raspberry_prisma_walker/build/pybind11/CMakeFiles/rebuild_cache.dir
+/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/_hebic++-obj.dir
+/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/hebic++.dir
+/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/hebic++-static.dir
+/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/edit_cache.dir
+/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/rebuild_cache.dir
+/home/claudio/raspberry_prisma_walker/hebi-cpp/build/hebi-c-build-dir/CMakeFiles/edit_cache.dir
+/home/claudio/raspberry_prisma_walker/hebi-cpp/build/hebi-c-build-dir/CMakeFiles/rebuild_cache.dir

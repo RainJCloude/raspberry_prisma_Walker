@@ -3,7 +3,7 @@ import os
 
 # Add the subdirectory to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'bin'))
-import prisma_walker
+from bin import prisma_walker
 
 import math
 import time

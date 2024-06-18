@@ -141,6 +141,7 @@ void sendCommand(Eigen::VectorXd torqueOrPositionCommand, bool positionCommand){
 		cmd_.setEffort(torqueOrPositionCommand.head(2));
 
  	group_->sendCommand(cmd_);
+	std::cout<<"Command sent"<<std::endl;
 	//the size of the byte that you should write is visible in the control table
 	int dxl_comm_result = packetHandler_->write4ByteTxRx(portHandler_, dxl_id, addrGoalPosition, torqueOrPositionCommand[2], &dxl_error_);
 
@@ -243,6 +244,8 @@ Eigen::VectorXd getFeedback(const bool usePrivileged, const double m1Pos, const 
 	double error1 = m1_pos_fbk - m1Pos;
 	double error2 = m2_pos_fbk - m2Pos;
 	//initialize always the 
+
+	
 	if(usePrivileged){
 		observations.setZero(9 + 2 + joint_history_pos_.size() + joint_history_vel_.size());
 		observations << rot_.col(1).transpose(),
@@ -254,12 +257,12 @@ Eigen::VectorXd getFeedback(const bool usePrivileged, const double m1Pos, const 
 				joint_history_vel_;
 
 		std::cout<<observations.size()<<std::endl;
-		
 	}
 	else{
 		observations.setZero(joint_history_pos_.size() + joint_history_vel_.size());
 		observations << joint_history_pos_, 
 				joint_history_vel_;
+		std::cout<<observations<<std::endl;
 	}
 
 

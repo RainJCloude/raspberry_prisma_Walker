@@ -134,11 +134,8 @@ class ENVIRONMENT {
 		pTarget3_ = pTarget3_.cwiseProduct(actionStd_);
 		actionMean_ << m1_pos_(index_imitation_), m2_pos_(index_imitation_), 0.0;
 		pTarget3_ += actionMean_;
-
-
 		current_action_ = pTarget3_;
 
-		std::cout<<"Uscita rete: "<<pTarget3_<<std::endl;
 		//pTarget3_.tail(nJoints_) << std::sin(2*M_PI*5000*t), std::sin(2*M_PI*5000*t + 0.25), 0;
 		//t+=control_dt_;
 
@@ -151,8 +148,12 @@ class ENVIRONMENT {
 			else
 				motors->sendCommand(linkTorque_.tail(nJoints_), false);
 		}
+		
+		std::cout<<"command sent"<<std::endl;
 
 		updateObservation();
+				std::cout<<"Aggiorno le osservazioni"<<std::endl;
+
 		incrementIndices();
 		
 	}
@@ -176,7 +177,8 @@ class ENVIRONMENT {
 	void updateObservation() {
 		
 		Eigen::VectorXd obs_motors = motors->getFeedback(use_privileged_, m1_pos_(index_imitation_), m2_pos_(index_imitation_));
- 		obDouble_ << obs_motors;
+ 		obDouble_ << obs_motors, 
+		current_action_;
 
 	}
 
@@ -227,7 +229,7 @@ protected:
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(prisma_walker, m) { //the name here must match the name of the module
+PYBIND11_MODULE(prisma_walker, m) { //the name here must match the name of the module, otherwise pyhton cannot see it
 	py::class_<ENVIRONMENT>(m, "ENVIRONMENT")
     	.def(pybind11::init<>())
 	.def("reset", &ENVIRONMENT::reset)

@@ -68,8 +68,6 @@ set(include_hebi  ${CMAKE_CURRENT_SOURCE_DIR}/../hebi-cpp/src)
 #set(lib_hebi ${CMAKE_CURRENT_SOURCE_DIR}/../hebi-cpp/build/libhebic++.so)
 #set(lib_hebi1 ${CMAKE_CURRENT_SOURCE_DIR}/../hebi-cpp/build/hebic++)
  
-set(subdir raspberry_prisma_walker)
-
 
 pybind11_add_module(prisma_walker Environment.cpp )
 target_link_libraries(prisma_walker PUBLIC ${dynamixel_lib} hebi hebic++ )  

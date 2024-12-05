@@ -19,7 +19,7 @@ constexpr int protocolVersion = 2.0;            // See which protocol version is
 
 // Default setting
 constexpr int dxl_id = 1;  // Dynamixel ID: 1
-constexpr int baudrate = 2000000;
+constexpr int baudrate = 57600;
 #define deviceName "/dev/ttyUSB0"     // Check which port is being used on your controller
 
 constexpr int TorqueEnable = 1;                 		// Value for enabling the torque
@@ -38,23 +38,9 @@ Actuators(){
 
 void initHandlersAndGroup(bool & ActuatorConnected, int num_pos, int num_vel)
 {			
-	portHandler_ = dynamixel::PortHandler::getPortHandler(deviceName);
-	packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocolVersion);
+	//portHandler_ = dynamixel::PortHandler::getPortHandler(deviceName);
+	//packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocolVersion);
 	group_ = lookup_.getGroupFromNames({"X5-4"}, {"X-01059", "X-01077"} );
-
-	
-	//control_strategy = hebi::Command::ControlStrategy::Strategy2;
-
-	/*if(controlStrategyInt == 1)
-		control_strategy = hebi::Command::ControlStrategy::DirectPWM;
-	else if(controlStrategyInt == 2)
-		control_strategy = hebi::Command::ControlStrategy::Strategy2;
-	else{
-		RSINFO_IF(visualizable_, "selected control strategy 1 (direct PWM) or 2: ")
-
-	}*/
-	
-	//control_strategy = hebi::Command::ControlStrategy::Strategy2;
 
 	if (!group_){
 		std::cout << "No group found!"<<std::endl;
@@ -64,71 +50,19 @@ void initHandlersAndGroup(bool & ActuatorConnected, int num_pos, int num_vel)
 		num_modules_ = group_->size();
 		std::cout<<"numero moduli: "<<num_modules_<<std::endl;
 
-		/*if(control_strategy == hebi::Command::ControlStrategy::Strategy2){
-			for (int module_index = 0; module_index < num_modules_; module_index++){
-				cmd_[module_index].settings().actuator().controlStrategy().set(control_strategy);
-				//positionGain() return a reference to an object CommandGain that is an using to the class Gains templated with its proper argmunts
-				//When the class has been templated, I can use its methods
-				cmd_[module_index].settings().actuator().positionGains().kP().set(20);
-				cmd_[module_index].settings().actuator().positionGains().kI().set(0.0);
-				cmd_[module_index].settings().actuator().positionGains().kD().set(-0.2);
-
-				cmd_[module_index].settings().actuator().velocityGains().kP().set(0.0);
-				cmd_[module_index].settings().actuator().velocityGains().kI().set(0.0);
-				cmd_[module_index].settings().actuator().velocityGains().kD().set(0.0);
-
-				cmd_[module_index].settings().actuator().effortGains().kP().set(1.0);
-				cmd_[module_index].settings().actuator().effortGains().kI().set(0.0);
-				cmd_[module_index].settings().actuator().effortGains().kD().set(0.0);
-
-				cmd_[module_index].settings().actuator().springConstant().set(75.0);
-
-				//operator [] access the command from the group command
-			}	
-		}		
-		else if(control_strategy == hebi::Command::ControlStrategy::DirectPWM){
-			for (int module_index = 0; module_index < num_modules_; module_index++){
-				cmd_[module_index].settings().actuator().controlStrategy().set(control_strategy);
-			}
-		}*/
-
 		group_->setCommandLifetimeMs(10); //0.01s
 		group_->setFeedbackFrequencyHz(100);  //it's important to receive all the feedback at the same time
 		ActuatorConnected = true; 
-	
-		//Enable dynamixel by rising the EnableTorque bit in the corresponding address
 
-		//it introduces asynchrony among multi-modal
-		//inputs for the RL policy: there is misalignment between the
-		//proprioceptive state and the visual observation in the real
-		//robot
-		joint_history_pos_.setZero(num_pos*2);
-		joint_history_vel_.setZero(num_vel*2);
 		quat_.setZero(4);
-		int dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, dxl_id, addrTorqueEnable, TorqueEnable, &dxl_error_);
+ 
+	      //int dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, dxl_id, addrTorqueEnable, TorqueEnable, &dxl_error_);
 	}
 }
 
 ~Actuators(){};
 
-
-/*void sinusoidalInputJustForTrying(){
-  period = 0.5f;
-  long timeout_ms = 100;
-  for (float t = 0.0f; t < 10.0f; t += period){
-    for (int module_index = 0; module_index < num_modules; module_index++)    {
-      command[module_index].actuator().position().set(sin(t * 0.5f + module_index * 0.25f));
-    }
-
-    if (group->sendCommandWithAcknowledgement(command, timeout_ms)){
-      std::cout << "Got acknowledgement." << std::endl;
-    }
-    else{
-      std::cout << "Did not receive acknowledgement!" << std::endl;
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds((long int) (period * 1000)));
-  }
-}*/
+ 
 void setInitialState(){
 	
 }
@@ -141,9 +75,11 @@ void sendCommand(Eigen::VectorXd torqueOrPositionCommand, bool positionCommand){
 		cmd_.setEffort(torqueOrPositionCommand.head(2));
 
  	group_->sendCommand(cmd_);
-	std::cout<<"Command sent"<<std::endl;
+
 	//the size of the byte that you should write is visible in the control table
-	int dxl_comm_result = packetHandler_->write4ByteTxRx(portHandler_, dxl_id, addrGoalPosition, torqueOrPositionCommand[2], &dxl_error_);
+	
+
+	//int dxl_comm_result = packetHandler_->write4ByteTxRx(portHandler_, dxl_id, addrGoalPosition, -0.2, &dxl_error_);
 
 }
 
@@ -162,7 +98,7 @@ void getMotorPos(const hebi::GroupFeedback& feedback,  Eigen::Vector3d & motor_p
 	double dxl_pos;
 	const double m1_pos_fbk = feedback[0].actuator().position().get();
 	const double m2_pos_fbk = feedback[1].actuator().position().get();
-	packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentPosition, (uint32_t*)&dxl_pos, &dxl_error_);
+	//packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentPosition, (uint32_t*)&dxl_pos, &dxl_error_);
 	
 	motor_pos << m1_pos_fbk, m2_pos_fbk, dxl_pos;
 }
@@ -171,7 +107,7 @@ void getMotorVel(const hebi::GroupFeedback& feedback, Eigen::Vector3d & motor_ve
 	double dxl_vel;
 	const double m1_vel_fbk = feedback[0].actuator().velocity().get();
 	const double m2_vel_fbk = feedback[1].actuator().velocity().get();
-	packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentVelocity, (uint32_t*)&dxl_vel, &dxl_error_);
+	//packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentVelocity, (uint32_t*)&dxl_vel, &dxl_error_);
 
 	motor_vel << m1_vel_fbk, m2_vel_fbk, dxl_vel;
 }
@@ -184,13 +120,13 @@ Eigen::VectorXd dataPlotMotorVariables(){
 	double dxl_vel;
 	const double m1_vel_fbk = Gfeedback_[0].actuator().velocity().get();
 	const double m2_vel_fbk = Gfeedback_[1].actuator().velocity().get();
-	packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentVelocity, (uint32_t*)&dxl_vel, &dxl_error_);
+	//packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentVelocity, (uint32_t*)&dxl_vel, &dxl_error_);
 
 
 	double dxl_pos; 
 	const double m1_pos_fbk = Gfeedback_[0].actuator().position().get();
 	const double m2_pos_fbk = Gfeedback_[1].actuator().position().get();
-	packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentPosition, (uint32_t*)&dxl_pos, &dxl_error_);
+	//packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentPosition, (uint32_t*)&dxl_pos, &dxl_error_);
 
 	Eigen::VectorXd motorVariables;
 	motorVariables.setZero(6); //seg fault if you forget it
@@ -207,12 +143,12 @@ Eigen::VectorXd getFeedback(const bool usePrivileged, const double m1Pos, const 
 	double dxl_vel;
 	const double m1_vel_fbk = Gfeedback_[0].actuator().velocity().get();
 	const double m2_vel_fbk = Gfeedback_[1].actuator().velocity().get();
-	packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentVelocity, (uint32_t*)&dxl_vel, &dxl_error_);
+	//packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentVelocity, (uint32_t*)&dxl_vel, &dxl_error_);
 
 	double dxl_pos; 
 	const double m1_pos_fbk = Gfeedback_[0].actuator().position().get();
 	const double m2_pos_fbk = Gfeedback_[1].actuator().position().get();
-	packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentPosition, (uint32_t*)&dxl_pos, &dxl_error_);
+	//packetHandler_->read4ByteTxRx(portHandler_, dxl_id, addrPresentPosition, (uint32_t*)&dxl_pos, &dxl_error_);
 
 	Eigen::VectorXd motorVariables;
 	motorVariables.setZero(6); //seg fault if you forget it
@@ -294,8 +230,8 @@ void updateJointHistory(Eigen::Vector3d motor_pos, Eigen::Vector3d motor_vel){
 void checkMotors(){};
 
 private:
-dynamixel::PortHandler *portHandler_;
-dynamixel::PacketHandler *packetHandler_;
+//dynamixel::PortHandler *portHandler_;
+//dynamixel::PacketHandler *packetHandler_;
 uint8_t dxl_error_ = 0;
 
 //hebi

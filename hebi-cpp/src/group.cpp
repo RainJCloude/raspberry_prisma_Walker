@@ -45,10 +45,14 @@ Group::~Group() noexcept {
     hebiGroupRelease(internal_);
 }
 
-int Group::size() { return number_of_modules_; }
+int Group::size() const { return number_of_modules_; }
 
 bool Group::setCommandLifetimeMs(int32_t ms) {
   return (hebiGroupSetCommandLifetime(internal_, ms) == HebiStatusSuccess);
+}
+
+int32_t Group::getCommandLifetimeMs() const {
+  return hebiGroupGetCommandLifetime(internal_);
 }
 
 bool Group::sendCommand(const GroupCommand& group_command) {
@@ -81,7 +85,14 @@ bool Group::requestInfo(GroupInfo& info, int32_t timeout_ms) {
   return (hebiGroupRequestInfo(internal_, info.internal_->internal_, timeout_ms) == HebiStatusSuccess);
 }
 
-std::string Group::startLog(const std::string& dir) {
+bool Group::requestInfoExtra(GroupInfo& info, InfoExtraFields extra_fields, int32_t timeout_ms) {
+  // Note -- should not use this with a subview!
+  if (info.isSubview())
+    return false;
+  return (hebiGroupRequestInfoExtra(internal_, info.internal_->internal_, static_cast<uint64_t>(extra_fields), timeout_ms) == HebiStatusSuccess);
+}
+
+std::string Group::startLog(const std::string& dir) const {
   HebiStringPtr str;
   if (hebiGroupStartLog(internal_, dir.c_str(), nullptr, &str) == HebiStatusSuccess) {
     assert(str);
@@ -100,7 +111,7 @@ std::string Group::startLog(const std::string& dir) {
   return "";
 }
 
-std::string Group::startLog(const std::string& dir, const std::string& file) {
+std::string Group::startLog(const std::string& dir, const std::string& file) const {
   HebiStringPtr str;
   if (hebiGroupStartLog(internal_, dir.c_str(), file.c_str(), &str) == HebiStatusSuccess) {
     assert(str);
@@ -119,7 +130,7 @@ std::string Group::startLog(const std::string& dir, const std::string& file) {
   return "";
 }
 
-std::shared_ptr<LogFile> Group::stopLog() {
+std::shared_ptr<LogFile> Group::stopLog() const {
   auto internal = hebiGroupStopLog(internal_);
   if (internal == nullptr) {
     return std::shared_ptr<LogFile>();
@@ -132,7 +143,7 @@ bool Group::setFeedbackFrequencyHz(float frequency) {
   return (hebiGroupSetFeedbackFrequencyHz(internal_, frequency) == HebiStatusSuccess);
 }
 
-float Group::getFeedbackFrequencyHz() { return hebiGroupGetFeedbackFrequencyHz(internal_); }
+float Group::getFeedbackFrequencyHz() const { return hebiGroupGetFeedbackFrequencyHz(internal_); }
 
 void Group::addFeedbackHandler(GroupFeedbackHandler handler) {
   std::lock_guard<std::mutex> lock_guard(handler_lock_);

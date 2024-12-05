@@ -45,14 +45,6 @@ else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 endif()
 
-#find_package(Python 3.6 COMPONENTS Interpreter Development.Module Development.Embed NumPy)
-
-
-#######################
-### src and linking ###
-#######################
-#lista di directories che stanno in quel percorso, tale lista la chiami SUBDIRS
-
 
 #Il .so è una libreria precompilata. Devo aggiungere solo quella
 #librerie precompilate da includere. Gli so contengono file oggetto e il vantagio di usarli è che le funzioni sono già compilate quindi perdi meno tempo in compilazione. Alternatively, one could use .lib file to connect the code but is a static connection and the functions must be compiled everytime

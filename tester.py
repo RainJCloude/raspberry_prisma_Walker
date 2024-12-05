@@ -90,17 +90,17 @@ def runNN(max_steps):
 
             env.step(action_ll.cpu().detach().numpy())
 
-            q_1.append(env.getPositions()[0])
-            q_2.append(env.getPositions()[1])
+            """q_1.append(env.getJointPositions()[0])
+            q_2.append(env.getJointPositions()[1])
 
-            dotq_1.append(env.getVelocities()[0])
-            dotq_2.append(env.getVelocities()[1])
+            dotq_1.append(env.getJointVelocities()[0])
+            dotq_2.append(env.getJointVelocities()[1])
             
-            motorTorque_x.append(env.getMotorTorques()[0])
-            motorTorque_x.append(env.getMotorTorques()[1])
+            #motorTorque_x.append(env.getMotorTorques()[0])
+            #motorTorque_x.append(env.getMotorTorques()[1])
 
-            pTarge_x.append(env.getReferences()[0])
-            pTarge_y.append(env.getReferences()[1])
+            pTarge_x.append(env.getReference()[0])
+            pTarge_y.append(env.getReference()[1])"""
 
             current_time = current_time + 0.01
             simulation_time.append(current_time)

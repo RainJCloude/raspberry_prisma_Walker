@@ -1,4 +1,4 @@
-/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/_hebic++-obj.dir/src/lookup.cpp.o: \
+CMakeFiles/_hebic++-obj.dir/src/lookup.cpp.o: \
  /home/claudio/raspberry_prisma_walker/hebi-cpp/src/lookup.cpp \
  /usr/include/stdc-predef.h \
  /home/claudio/raspberry_prisma_walker/hebi-cpp/src/lookup.hpp \

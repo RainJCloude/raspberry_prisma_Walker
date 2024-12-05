@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/claudio/raspberry_prisma_walker/pybind11/include -isystem /home/claudio/raspberry_prisma_walker/hebi-cpp/hebi/include
+CXX_INCLUDES = -isystem /home/claudio/raspberry_prisma_walker/hebi-cpp/hebi/include
 
-CXX_FLAGS = -std=gnu++11 -fPIC
+CXX_FLAGS = -std=gnu++11 -fPIC -Wall -Wextra -Wno-unused-function
 

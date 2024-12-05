@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/claudio/raspberry_prisma_walker/pybind11/include -I/home/claudio/raspberry_prisma_walker/hebi-cpp/src -I/home/claudio/raspberry_prisma_walker/hebi-cpp/util -I/home/claudio/raspberry_prisma_walker/hebi-cpp/include -I/home/claudio/raspberry_prisma_walker/hebi-cpp/Eigen -I/home/claudio/raspberry_prisma_walker/hebi-cpp/hebi/include
+CXX_INCLUDES = -I/home/claudio/raspberry_prisma_walker/hebi-cpp/src -I/home/claudio/raspberry_prisma_walker/hebi-cpp/util -I/home/claudio/raspberry_prisma_walker/hebi-cpp/include -I/home/claudio/raspberry_prisma_walker/hebi-cpp/rapidyaml -isystem /home/claudio/raspberry_prisma_walker/hebi-cpp/hebi/include -isystem /home/claudio/raspberry_prisma_walker/hebi-cpp/Eigen
 
-CXX_FLAGS = -std=gnu++11 -fPIC
+CXX_FLAGS = -std=gnu++11 -fPIC -Wall -Wextra -Wno-unused-function
 

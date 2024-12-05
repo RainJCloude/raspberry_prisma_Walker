@@ -1,4 +1,4 @@
-/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/_hebic++-obj.dir/src/version.cpp.o: \
+CMakeFiles/_hebic++-obj.dir/src/version.cpp.o: \
  /home/claudio/raspberry_prisma_walker/hebi-cpp/src/version.cpp \
  /usr/include/stdc-predef.h \
  /home/claudio/raspberry_prisma_walker/hebi-cpp/src/version.hpp \

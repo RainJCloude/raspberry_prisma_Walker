@@ -2,6 +2,8 @@ pytorch
 pybind #pip install pybind
 eigen #sudo apt-get install libeigen3-dev
 
+eigen è header only
+
 
 there is a subdirectory nel cmake che chiama il cmake di hebi Q
 
@@ -14,7 +16,15 @@ Hebi has been included through the addsubirectory in Cmake, which look for the c
 Attenzione a quando ti passi la libreria da un computer a un altro, perché i file oggetto buildati su un'architettura potrebbero non essere riconoscibili su un altra. Elimina sempre la cartella build e ricostruiscila sul nuovo computer.	
 La lib di Hebi è stata costruita per diverse architetture. Quando buildi devi specificare se la tua architettura è diversa da quella x86check 	
 Controlla l'architettura della tua raspberry e lancia:
-cmake -DLIBHEBI_TARGET_ARCHITECTURE=aarch64 ..  #dove al posto di aarch64 metti la tua architettura
+
+	vai in raspberry/build e lancia:
+	INVECE DI CMAKE
+LANCI:
+	cmake -DLIBHEBI_TARGET_ARCHITECTURE=aarch64 ..  
+	#dove al posto di aarch64 metti la tua architettura
+
+
+Quando scarichi la lib di hebi, il suo cmake chiama un altro cmake in una subdirectory, il quale aggiunge delle .so (che ti sono sempre fornite appena scarichi la libreria) relative al tipo di architettura sul quale stai buildando. Il comando precedente serve a selezionare il .so che ti serve, in modo da avere una libreria hebi chiamabile dai codici sulla tua nuova architettura
 
 Con:
 uname -m vedi il tipo di architettura
@@ -29,4 +39,29 @@ Il tuo dispositivo deve essere configurato per far parte della stessa rete ether
 
 Gli hebi hanno ip statico 10.11.12.x con x [0,255]. Devi settare l'ip statico del tuo dispositivo in modo tale che i primi 3 byte siano uguali, e l'ultimo deve essere diverso da quello dei tuoi motori. Avevi un problema perché avevi settato il tuo ip (ethernet, a quanto pare i dispositivi ne hanno almeno 2 (ethernet e ip)) come 10.11.12.13, ma questo era l'ip del primo motore Hebi. Quindi lui non ti riusciva a trovare il primo motore. 
 Mettere un altro numero è andato bene. 
-Per cambiarlo vai in wired-setting Ipv4- setti a manual invece di DHCP- e meti l'ip e la netmask a 255.255.255.0
+Per cambiarlo vai in wired-setting Ipv4- setti a manual invece di DHCP- e meti l'ip del tuo dispositivo e la netmask a 255.255.255.0 (la netmask serve a dire che i primi 3 byte sono quelli che identificano il tipo di rete)
+
+
+Per Kdl usi -lorocos-kdl 
+kdl_parser è solo di ros_noetic. Per includerla devi fare -I/opt/ros/noetic/include
+Per la lib devi fare -lkdl_parser
+
+g++ -I/usr/include/eigen3 -o kdl_2link kdl_2link.cpp -lorocos-kdl -I/opt/ros/noetic/include  -L/opt/ros/noetic/lib -lkdl_parser
+
+
+
+g++ -o motors_command feedforward.cpp -I hebi-cpp/src/ -I hebi-cpp/hebi/include/ -I hebi-cpp/Eigen/ -L hebi-cpp/build/ -l hebic++ -L hebi-cpp/hebi/lib/linux_x86_64/ -l hebi -pthread -I dynamixel_dependencies/include/dynamixel_sdk/ -L bin/ -l dxl_x64_cpp
+
+
+LD_LIBRARY_PATH=hebi-cpp/build/:$LD_LIBRARY_PATH ./motors_command 
+
+
+
+
+
+ros2 topic pub /position_controller/commands std_msgs/msg/Float64MultiArray "{data: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]}"^C
+
+
+ros2 topic pub /joint_trajectory_controller/command trajectory_msgs/msg/JointTrajectory "{header: {stamp: {sec: 0, nanosec: 0}, frame_id: ''}, joint_names: ['joint_a4'], points: [{positions: [1.0], velocities: [0.0], time_from_start: {sec: 1, nanosec: 0}}]}"
+
+

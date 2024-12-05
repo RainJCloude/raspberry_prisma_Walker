@@ -1,4 +1,4 @@
-/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/_hebic++-obj.dir/src/message_helpers.cpp.o: \
+CMakeFiles/_hebic++-obj.dir/src/message_helpers.cpp.o: \
  /home/claudio/raspberry_prisma_walker/hebi-cpp/src/message_helpers.cpp \
  /usr/include/stdc-predef.h \
  /home/claudio/raspberry_prisma_walker/hebi-cpp/src/message_helpers.hpp \

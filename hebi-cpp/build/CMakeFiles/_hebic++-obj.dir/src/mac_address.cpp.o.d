@@ -1,4 +1,4 @@
-/home/claudio/raspberry_prisma_walker/hebi-cpp/build/CMakeFiles/_hebic++-obj.dir/src/mac_address.cpp.o: \
+CMakeFiles/_hebic++-obj.dir/src/mac_address.cpp.o: \
  /home/claudio/raspberry_prisma_walker/hebi-cpp/src/mac_address.cpp \
  /usr/include/stdc-predef.h \
  /home/claudio/raspberry_prisma_walker/hebi-cpp/src/mac_address.hpp \

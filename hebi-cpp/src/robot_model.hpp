@@ -139,6 +139,8 @@ public:
   // std::array<double, N>& errors (NOTE: FILL THIS IN VIA THE CALLBACK FUNCTION)
   using ObjectiveCallback = std::function<void(const std::vector<double>&, std::array<double, N>&)>;
 
+  CustomObjective(CustomObjective&) = delete;
+  CustomObjective(CustomObjective&&) = delete;
   CustomObjective(ObjectiveCallback error_function) : _weight(1.0f), _callback(error_function) {}
   CustomObjective(double weight, ObjectiveCallback error_function) : _weight(weight), _callback(error_function) {}
 
@@ -232,20 +234,11 @@ enum class ActuatorType {
   R8_16 = HebiActuatorTypeR8_16
 };
 
-enum class LinkType {
-  X5 = HebiLinkTypeX5,
-  X8 = HebiLinkTypeR8
-};
+enum class LinkType { X5 = HebiLinkTypeX5, X8 = HebiLinkTypeR8 };
 
-enum class LinkInputType {
-  RightAngle = HebiLinkInputTypeRightAngle,
-  Inline = HebiLinkInputTypeInline
-};
+enum class LinkInputType { RightAngle = HebiLinkInputTypeRightAngle, Inline = HebiLinkInputTypeInline };
 
-enum class LinkOutputType {
-  RightAngle = HebiLinkOutputTypeRightAngle,
-  Inline = HebiLinkOutputTypeInline
-};
+enum class LinkOutputType { RightAngle = HebiLinkOutputTypeRightAngle, Inline = HebiLinkOutputTypeInline };
 
 enum class BracketType {
   X5LightLeft = HebiBracketTypeX5LightLeft,
@@ -268,12 +261,12 @@ enum class EndEffectorType {
   R8Parallel = HebiEndEffectorTypeR8Parallel
 };
 
-
 /**
  * @brief Base class for all metadata. Do not instantiate directly.
  */
 class MetadataBase {
   friend class RobotModel;
+
 public:
   MetadataBase() = default;
   MetadataBase(const MetadataBase&) = delete;
@@ -281,13 +274,11 @@ public:
   MetadataBase(MetadataBase&&) = default;
   MetadataBase& operator=(MetadataBase&&) = default;
 
-  ElementType elementType() const {
-    return static_cast<ElementType>(metadata_.element_type_);
-  }
+  ElementType elementType() const { return static_cast<ElementType>(metadata_.element_type_); }
 
   /**
    * @brief View the actuator specific fields, if this metadata describes an actuator.
-   * 
+   *
    * Note: This will return @c nullptr if this metadata does not describe an actuator.
    */
   const ActuatorMetadata* asActuator() const {
@@ -299,7 +290,7 @@ public:
 
   /**
    * @brief View the bracket specific fields, if this metadata describes a bracket.
-   * 
+   *
    * Note: This will return @c nullptr if this metadata does not describe a bracket.
    */
   const BracketMetadata* asBracket() const {
@@ -311,7 +302,7 @@ public:
 
   /**
    * @brief View the joint specific fields, if this metadata describes a joint.
-   * 
+   *
    * Note: This will return @c nullptr if this metadata does not describe a joint.
    */
   const JointMetadata* asJoint() const {
@@ -323,7 +314,7 @@ public:
 
   /**
    * @brief View the link specific fields, if this metadata describes a link.
-   * 
+   *
    * Note: This will return @c nullptr if this metadata does not describe a link.
    */
   const LinkMetadata* asLink() const {
@@ -335,7 +326,7 @@ public:
 
   /**
    * @brief View the rigid body specific fields, if this metadata describes a rigid body.
-   * 
+   *
    * Note: This will return @c nullptr if this metadata does not describe a rigid body.
    */
   const RigidBodyMetadata* asRigidBody() const {
@@ -348,6 +339,7 @@ public:
 protected:
   // Raw data can only be accessed by the sub classes
   const HebiRobotModelElementMetadata& metadata() const { return metadata_; }
+
 private:
   HebiRobotModelElementMetadata metadata_;
 };
@@ -441,7 +433,7 @@ private:
    * Internal function for resolving variadic template.
    */
   template<typename T, typename... Args>
-  HebiStatusCode addObjectives(HebiIKPtr ik, const T& objective, Args... args) const {
+  HebiStatusCode addObjectives(HebiIKPtr ik, const T& objective, const Args&... args) const {
     static_assert(std::is_convertible<T*, Objective*>::value,
                   "Must pass arguments of base type hebi::robot_model::Objective to the variable args of solveIK!");
     auto res = static_cast<const Objective*>(&objective)->addObjective(ik);
@@ -462,10 +454,9 @@ private:
   RobotModel(HebiRobotModelPtr);
 
 public:
-
-  using ActuatorType [[deprecated ("Replace with hebi::robot_model::ActuatorType")]] = robot_model::ActuatorType;
-  using BracketType [[deprecated ("Replace with hebi::robot_model::BracketType")]] = robot_model::BracketType;
-  using LinkType [[deprecated ("Replace with hebi::robot_model::LinkType")]] = robot_model::LinkType;
+  using ActuatorType [[deprecated("Replace with hebi::robot_model::ActuatorType")]] = robot_model::ActuatorType;
+  using BracketType [[deprecated("Replace with hebi::robot_model::BracketType")]] = robot_model::BracketType;
+  using LinkType [[deprecated("Replace with hebi::robot_model::LinkType")]] = robot_model::LinkType;
 
   /**
    * \brief Creates a robot model object with no bodies and an identity base
@@ -486,7 +477,7 @@ public:
 
   /**
    * \brief Create a RobotModel object that is a subtree of this robot model,
-   * beginning at a given element.  The created subtree is linked to the 
+   * beginning at a given element.  The created subtree is linked to the
    * original RobotModel, and so kinematics and IK operations are not safe if
    * the original model and subtree are accessed from different threads.  However,
    * the lifetimes can be treated as independent (the original RobotModel can be
@@ -543,8 +534,10 @@ public:
    *
    * \deprecated Replaced by getFrameCount(FrameType) accepting C++ enum
    */
-  [[deprecated ("Replaced by hebi::robot_model::RobotModel::getFrameCount(hebi::robot_model::FrameType)")]]
-  size_t getFrameCount(HebiFrameType frame_type) const { return getFrameCount(static_cast<FrameType>(frame_type)); }
+  [[deprecated("Replaced by hebi::robot_model::RobotModel::getFrameCount(hebi::robot_model::FrameType)")]] size_t
+  getFrameCount(HebiFrameType frame_type) const {
+    return getFrameCount(static_cast<FrameType>(frame_type));
+  }
 
   /**
    * \brief Returns the number of settable degrees of freedom in the kinematic
@@ -595,8 +588,10 @@ public:
    *
    * \deprecated Replaced by addJoint(JointType) accepting C++ enum
    */
-  [[deprecated ("Replaced by hebi::robot_model::RobotModel::addJoint(hebi::robot_model::JointType)")]]
-  bool addJoint(HebiJointType joint_type) { return addJoint(static_cast<JointType>(joint_type)); }
+  [[deprecated("Replaced by hebi::robot_model::RobotModel::addJoint(hebi::robot_model::JointType)")]] bool addJoint(
+      HebiJointType joint_type) {
+    return addJoint(static_cast<JointType>(joint_type));
+  }
 
   /**
    * \brief Add an element to the robot model with the kinematics/dynamics of
@@ -636,7 +631,7 @@ public:
 
   /**
    * \brief Add an end effector element to the robot model.
-   * 
+   *
    * For a "custom" type end effector, indentity transforms and
    * zero mass and inertia parameters are used.
    *
@@ -645,7 +640,7 @@ public:
   bool addEndEffector(EndEffectorType end_effector_type);
   /**
    * \brief Add an end effector element to the robot model.
-   * 
+   *
    * For a "custom" type end effector, indentity transforms and
    * zero mass and inertia parameters are used.
    *
@@ -679,8 +674,8 @@ public:
    *
    * \deprecated Replaced by getForwardKinematics accepting C++ enum
    */
-  [[deprecated ("Change first argument form HebiFrameType to hebi::robot_model::FrameType")]]
-  void getForwardKinematics(HebiFrameType frame_type, const Eigen::VectorXd& positions, Matrix4dVector& frames) const {
+  [[deprecated("Change first argument form HebiFrameType to hebi::robot_model::FrameType")]] void getForwardKinematics(
+      HebiFrameType frame_type, const Eigen::VectorXd& positions, Matrix4dVector& frames) const {
     getForwardKinematics(static_cast<FrameType>(frame_type), positions, frames);
   }
 
@@ -716,8 +711,8 @@ public:
    *
    * \deprecated Replaced by getFK accepting C++ enum
    */
-  [[deprecated ("Change first argument form HebiFrameType to hebi::robot_model::FrameType")]]
-  void getFK(HebiFrameType frame_type, const Eigen::VectorXd& positions, Matrix4dVector& frames) const {
+  [[deprecated("Change first argument form HebiFrameType to hebi::robot_model::FrameType")]] void getFK(
+      HebiFrameType frame_type, const Eigen::VectorXd& positions, Matrix4dVector& frames) const {
     getFK(static_cast<FrameType>(frame_type), positions, frames);
   }
 
@@ -750,7 +745,7 @@ public:
    */
   template<typename... Args>
   IKResult solveInverseKinematics(const Eigen::VectorXd& initial_positions, Eigen::VectorXd& result,
-                                  Args... args) const {
+                                  const Args&... args) const {
     return solveIK(initial_positions, result, args...);
   }
 
@@ -769,7 +764,7 @@ public:
    * have a base class of Objective.
    */
   template<typename... Args>
-  IKResult solveIK(const Eigen::VectorXd& initial_positions, Eigen::VectorXd& result, Args... objectives) const {
+  IKResult solveIK(const Eigen::VectorXd& initial_positions, Eigen::VectorXd& result, const Args&... objectives) const {
     // Create a HEBI C library IK object
     auto ik = hebiIKCreate();
 
@@ -811,14 +806,14 @@ public:
    * See getJ for details.
    */
   void getJacobians(FrameType, const Eigen::VectorXd& positions, MatrixXdVector& jacobians) const;
-  
+
   /**
    * \brief Generates the Jacobian for each frame in the given kinematic tree.
    *
    * \deprecated Replaced by getJacobians accepting C++ enum
    */
-  [[deprecated]]
-  void getJacobians(HebiFrameType frame_type, const Eigen::VectorXd& positions, MatrixXdVector& jacobians) const {
+  [[deprecated]] void getJacobians(HebiFrameType frame_type, const Eigen::VectorXd& positions,
+                                   MatrixXdVector& jacobians) const {
     getJacobians(static_cast<FrameType>(frame_type), positions, jacobians);
   }
 
@@ -842,8 +837,8 @@ public:
    *
    * \deprecated Replaced by getJ accepting C++ enum
    */
-  [[deprecated ("Change first argument form HebiFrameType to hebi::robot_model::FrameType")]]
-  void getJ(HebiFrameType frame_type, const Eigen::VectorXd& positions, MatrixXdVector& jacobians) const {
+  [[deprecated("Change first argument form HebiFrameType to hebi::robot_model::FrameType")]] void getJ(
+      HebiFrameType frame_type, const Eigen::VectorXd& positions, MatrixXdVector& jacobians) const {
     getJ(static_cast<FrameType>(frame_type), positions, jacobians);
   }
 
@@ -888,6 +883,23 @@ public:
    * @brief Returns the metadata of each component of the robot model.
    */
   void getMetadata(std::vector<MetadataBase>& metadata) const;
+
+  /*
+   * \param comp_torque A vector which is filled with the torques necessary
+   * to offset the effect of gravity on this robot model. This vector is
+   * resized as necessary inside this function (it is set to have length
+   * equal to the number of degrees of freedom).
+   */
+  void getGravCompEfforts(const Eigen::VectorXd& angles, const Eigen::Vector3d& gravity,
+                          Eigen::VectorXd& comp_torque) const;
+
+  /*
+   * Computes the torques necessary to accelerate the masses within the arm, given the
+   * current configuration.
+   */
+  void getDynamicCompEfforts(const Eigen::VectorXd& angles, const Eigen::VectorXd& cmd_pos, const Eigen::VectorXd& cmd_vel,
+                             const Eigen::VectorXd& cmd_accel, Eigen::VectorXd& comp_torque, double dt) const;
+
 private:
   /**
    * Disable copy and move constructors and assignment operators

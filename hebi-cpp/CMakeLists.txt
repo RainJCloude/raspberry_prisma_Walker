@@ -1,6 +1,10 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0048 NEW)
-project(hebi_cpp_api VERSION 3.7.0)
+project(hebi_cpp_api VERSION 3.11.1)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wno-unused-function)
+endif()
 
 # If you want to include the C API from an out of source tree location,
 # pass `-DHEBI_C_DIR=<dir>` to cmake when generating this project
@@ -24,17 +28,22 @@ set(hebi_cpp_src
   src/log_file.cpp
   src/lookup.cpp
   src/trajectory.cpp
+  src/robot_config.cpp
   src/robot_model.cpp
   src/version.cpp)
 
 set(hebi_cpp_util
+  src/util/file.cpp
   src/util/mobile_io.cpp)
 
 set(hebi_cpp_arm
   src/arm/kinematics_helper.cpp
   src/arm/arm.cpp)
 
-add_library(_hebic++-obj OBJECT ${hebi_cpp_src} ${hebi_cpp_util} ${hebi_cpp_arm}) #no linking, but the headers are pasted into the source code of the cpp. So, _hebic++-obj contains the .cpp file where the .h file has been pasted and replaced from the include...
+set(hebi_cpp_third_party
+  rapidyaml/rapidyaml-0.5.0.cpp)
+
+add_library(_hebic++-obj OBJECT ${hebi_cpp_src} ${hebi_cpp_util} ${hebi_cpp_arm} ${hebi_cpp_third_party})
 add_library(hebic++ SHARED $<TARGET_OBJECTS:_hebic++-obj>)
 add_library(hebic++-static STATIC $<TARGET_OBJECTS:_hebic++-obj>)
 
@@ -42,10 +51,13 @@ target_link_libraries(hebic++ PUBLIC hebi)
 target_link_libraries(hebic++-static PUBLIC hebi)
 
 target_include_directories(_hebic++-obj
-  PUBLIC src util include Eigen
+  PUBLIC src util include rapidyaml
+  $<TARGET_PROPERTY:hebi,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(_hebic++-obj
+  SYSTEM PUBLIC Eigen
   $<TARGET_PROPERTY:hebi,INTERFACE_INCLUDE_DIRECTORIES>)
 target_include_directories(hebic++ INTERFACE $<TARGET_PROPERTY:_hebic++-obj,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(hebic++-static INTERFACE $<TARGET_PROPERTY:_hebic++-obj, INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(hebic++-static INTERFACE $<TARGET_PROPERTY:_hebic++-obj,INTERFACE_INCLUDE_DIRECTORIES>)
 
 set_target_properties(_hebic++-obj hebic++ hebic++-static PROPERTIES
   CXX_STANDARD 11

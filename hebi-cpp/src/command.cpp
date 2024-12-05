@@ -89,6 +89,28 @@ void Command::NumberedFloatField::clear(size_t fieldNumber) {
   hebiCommandSetNumberedFloat(internal_, field_, fieldNumber, nullptr);
 }
 
+Command::IpAddressField::IpAddressField(HebiCommandRef& internal, HebiCommandUInt64Field field)
+  : internal_(internal), field_(field) {}
+
+bool Command::IpAddressField::has() const {
+  return (uint64Getter(internal_, field_, nullptr) == HebiStatusSuccess);
+}
+
+IpAddress Command::IpAddressField::get() const {
+  uint64_t ret;
+  if (uint64Getter(internal_, field_, &ret) != HebiStatusSuccess) {
+    ret = 0;
+  }
+  return IpAddress::fromLittleEndian(static_cast<uint32_t>(ret));
+}
+
+void Command::IpAddressField::set(const IpAddress& value) {
+  uint64_t val = value.getLittleEndian();
+  hebiCommandSetUInt64(internal_, field_, &val);
+}
+
+void Command::IpAddressField::clear() { hebiCommandSetUInt64(internal_, field_, nullptr); }
+
 Command::BoolField::BoolField(HebiCommandRef& internal, HebiCommandBoolField field)
   : internal_(internal), field_(field) {}
 
@@ -174,25 +196,25 @@ void Command::IoBank::setFloat(size_t pinNumber, float value) {
 }
 
 bool Command::IoBank::hasLabel(size_t pinNumber) const {
-  return (hebiCommandGetIoLabelString(internal_, bank_, pinNumber,  nullptr, nullptr) == HebiStatusSuccess);
+  return (hebiCommandGetIoLabelString(internal_, bank_, static_cast<int>(pinNumber),  nullptr, nullptr) == HebiStatusSuccess);
 }
 
 std::string Command::IoBank::getLabel(size_t pinNumber) const {
   // Get the size first
   size_t length;
-  if (hebiCommandGetIoLabelString(internal_, bank_, pinNumber, nullptr, &length) != HebiStatusSuccess || length == 0) {
+  if (hebiCommandGetIoLabelString(internal_, bank_, static_cast<int>(pinNumber), nullptr, &length) != HebiStatusSuccess || length == 0) {
     // String field doesn't exist -- return an empty string
     return "";
   }
   std::string tmp(length - 1, 0);
-  hebiCommandGetIoLabelString(internal_, bank_, pinNumber, &*tmp.begin(), &length);
+  hebiCommandGetIoLabelString(internal_, bank_, static_cast<int>(pinNumber), &*tmp.begin(), &length);
   return tmp;
 }
 
 void Command::IoBank::setLabel(size_t pinNumber, const std::string& label) {
   const char* buffer = label.c_str();
   size_t length = label.size();
-  hebiCommandSetIoLabelString(internal_, bank_, pinNumber, buffer, &length);;
+  hebiCommandSetIoLabelString(internal_, bank_, static_cast<int>(pinNumber), buffer, &length);;
 }
 
 void Command::IoBank::clear(size_t pinNumber) {

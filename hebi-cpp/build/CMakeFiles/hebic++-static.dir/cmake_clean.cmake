@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/claudio/raspberry_prisma_walker/bin/libhebic++-static.a"
-  "/home/claudio/raspberry_prisma_walker/bin/libhebic++-static.pdb"
+  "libhebic++-static.a"
+  "libhebic++-static.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

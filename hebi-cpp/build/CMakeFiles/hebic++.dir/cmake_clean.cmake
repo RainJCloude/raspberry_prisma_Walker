@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
-  "/home/claudio/raspberry_prisma_walker/bin/libhebic++.pdb"
-  "/home/claudio/raspberry_prisma_walker/bin/libhebic++.so"
-  "/home/claudio/raspberry_prisma_walker/bin/libhebic++.so.3.7.0"
+  "libhebic++.pdb"
+  "libhebic++.so"
+  "libhebic++.so.3.11.1"
 )
 
 # Per-language clean rules from dependency scanning.

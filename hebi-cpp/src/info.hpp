@@ -6,6 +6,7 @@
 
 #include "color.hpp"
 #include "gains.hpp"
+#include "ip_address.hpp"
 #include "message_helpers.hpp"
 #include "util.hpp"
 
@@ -46,6 +47,9 @@ public:
     /// A combination of the position, velocity, and effort loops with P feeding to T and V feeding to PWM; documented
     /// on docs.hebi.us under "Control Modes"
     Strategy4,
+    /// A combination of the position, velocity, and effort loops with P and V feeding to T; only supported for actuators
+    /// supporting field-oriented motor control. Documented on docs.hebi.us under "Control Modes"
+    Strategy5
   };
 
   enum class CalibrationState {
@@ -159,6 +163,68 @@ protected:
   private:
     const HebiInfoRef& internal_;
     HebiInfoHighResAngleField const field_;
+  };
+
+  /// \brief A message field representable by an unsigned 64 bit integer value.
+  class UInt64Field final {
+  public:
+#ifndef DOXYGEN_OMIT_INTERNAL
+    UInt64Field(const HebiInfoRef& internal, HebiInfoUInt64Field field);
+#endif // DOXYGEN_OMIT_INTERNAL
+    /// \brief Allows casting to a bool to check if the field has a value
+    /// without directly calling @c has().
+    ///
+    /// This can be used as in the following (assuming 'parent' is a parent message,
+    /// and this field is called 'myField')
+    /// \code{.cpp}
+    /// Info::UInt64Field& f = parent.myField();
+    /// if (f)
+    ///   std::cout << "Field has value: " << f.get() << std::endl;
+    /// else
+    ///   std::cout << "Field has no value!" << std::endl;
+    /// \endcode
+    explicit operator bool() const { return has(); }
+    /// \brief True if (and only if) the field has a value.
+    bool has() const;
+    /// \brief If the field has a value, returns that value; otherwise,
+    /// returns a default.
+    uint64_t get() const;
+
+    HEBI_DISABLE_COPY_MOVE(UInt64Field)
+  private:
+    const HebiInfoRef& internal_;
+    HebiInfoUInt64Field const field_;
+  };
+
+  /// \brief A message field representable by an unsigned 64 bit integer value.
+  class IpAddressField final {
+  public:
+#ifndef DOXYGEN_OMIT_INTERNAL
+    IpAddressField(const HebiInfoRef& internal, HebiInfoUInt64Field field);
+#endif // DOXYGEN_OMIT_INTERNAL
+    /// \brief Allows casting to a bool to check if the field has a value
+    /// without directly calling @c has().
+    ///
+    /// This can be used as in the following (assuming 'parent' is a parent message,
+    /// and this field is called 'myField')
+    /// \code{.cpp}
+    /// Info::IpAddressField& f = parent.myField();
+    /// if (f)
+    ///   std::cout << "Field has value: " << f.get() << std::endl;
+    /// else
+    ///   std::cout << "Field has no value!" << std::endl;
+    /// \endcode
+    explicit operator bool() const { return has(); }
+    /// \brief True if (and only if) the field has a value.
+    bool has() const;
+    /// \brief If the field has a value, returns that value; otherwise,
+    /// returns 0.0.0.0.
+    IpAddress get() const;
+
+    HEBI_DISABLE_COPY_MOVE(IpAddressField)
+  private:
+    const HebiInfoRef& internal_;
+    HebiInfoUInt64Field const field_;
   };
 
   /// \brief A message field representable by a bool value.
@@ -298,7 +364,6 @@ protected:
     HEBI_DISABLE_COPY_MOVE(IoBank)
   private:
     HebiInfoPtr internal_;
-    HebiInfoRef& internal_ref_;
     HebiInfoIoPinBank const bank_;
   };
   /// \brief A message field for interfacing with an LED.
@@ -494,6 +559,31 @@ protected:
         imu_(internal),
         name_(internal_ptr, HebiInfoStringName),
         family_(internal_ptr, HebiInfoStringFamily),
+        electrical_type_(internal_ptr, HebiInfoStringElectricalType),
+        electrical_revision_(internal_ptr, HebiInfoStringElectricalRevision),
+        mechanical_type_(internal_ptr, HebiInfoStringMechanicalType),
+        mechanical_revision_(internal_ptr, HebiInfoStringMechanicalRevision),
+        firmware_type_(internal_ptr, HebiInfoStringFirmwareType),
+        firmware_revision_(internal_ptr, HebiInfoStringFirmwareRevision),
+        user_settings_bytes_1_(internal_ptr, HebiInfoStringUserSettingsBytes1),
+        user_settings_bytes_2_(internal_ptr, HebiInfoStringUserSettingsBytes2),
+        user_settings_bytes_3_(internal_ptr, HebiInfoStringUserSettingsBytes3),
+        user_settings_bytes_4_(internal_ptr, HebiInfoStringUserSettingsBytes4),
+        user_settings_bytes_5_(internal_ptr, HebiInfoStringUserSettingsBytes5),
+        user_settings_bytes_6_(internal_ptr, HebiInfoStringUserSettingsBytes6),
+        user_settings_bytes_7_(internal_ptr, HebiInfoStringUserSettingsBytes7),
+        user_settings_bytes_8_(internal_ptr, HebiInfoStringUserSettingsBytes8),
+        user_settings_float_1_(internal, HebiInfoFloatUserSettingsFloat1),
+        user_settings_float_2_(internal, HebiInfoFloatUserSettingsFloat2),
+        user_settings_float_3_(internal, HebiInfoFloatUserSettingsFloat3),
+        user_settings_float_4_(internal, HebiInfoFloatUserSettingsFloat4),
+        user_settings_float_5_(internal, HebiInfoFloatUserSettingsFloat5),
+        user_settings_float_6_(internal, HebiInfoFloatUserSettingsFloat6),
+        user_settings_float_7_(internal, HebiInfoFloatUserSettingsFloat7),
+        user_settings_float_8_(internal, HebiInfoFloatUserSettingsFloat8),
+        ip_address_(internal, HebiInfoUInt64IpAddress),
+        subnet_mask_(internal, HebiInfoUInt64SubnetMask),
+        default_gateway_(internal, HebiInfoUInt64DefaultGateway),
         save_current_settings_(internal, HebiInfoFlagSaveCurrentSettings) {}
 #endif // DOXYGEN_OMIT_INTERNAL
 
@@ -513,6 +603,56 @@ protected:
     const StringField& name() const { return name_; }
     /// Gets the family for this module.
     const StringField& family() const { return family_; }
+    /// Gets the electrical type of this module
+    const StringField& electricalType() const { return electrical_type_; }
+    /// Gets the electrical revision of this module
+    const StringField& electricalRevision() const { return electrical_revision_; }
+    /// Gets the mechanical type of this module
+    const StringField& mechanicalType() const { return mechanical_type_; }
+    /// Gets the mechanical revision of this module
+    const StringField& mechanicalRevision() const { return mechanical_revision_; }
+    /// Gets the firmware type of this module
+    const StringField& firmwareType() const { return firmware_type_; }
+    /// Gets the firmware revision of this module
+    const StringField& firmwareRevision() const { return firmware_revision_; }
+    /// Gets the given byte array user setting; valid for entry number 1-8.
+    /// Throws out of range if given an invalid index
+    const StringField& userSettingsBytes(size_t number) const
+    {
+      switch (number) {
+        case 1: return user_settings_bytes_1_;
+        case 2: return user_settings_bytes_2_;
+        case 3: return user_settings_bytes_3_;
+        case 4: return user_settings_bytes_4_;
+        case 5: return user_settings_bytes_5_;
+        case 6: return user_settings_bytes_6_;
+        case 7: return user_settings_bytes_7_;
+        case 8: return user_settings_bytes_8_;
+      }
+      throw std::out_of_range("Invalid option for bytes array user setting entry!");
+    }
+    /// Gets the given float user setting; valid for entry number 1-8.
+    /// Throws out of range if given an invalid index
+    const FloatField& userSettingsFloat(size_t number) const
+    {
+      switch (number) {
+        case 1: return user_settings_float_1_;
+        case 2: return user_settings_float_2_;
+        case 3: return user_settings_float_3_;
+        case 4: return user_settings_float_4_;
+        case 5: return user_settings_float_5_;
+        case 6: return user_settings_float_6_;
+        case 7: return user_settings_float_7_;
+        case 8: return user_settings_float_8_;
+      }
+      throw std::out_of_range("Invalid option for float user setting entry!");
+    }
+    /// Gets the IP address for this module.
+    const IpAddressField& ipAddress() const { return ip_address_; }
+    /// Gets the subnet mask for this module.
+    const IpAddressField& subnetMask() const { return subnet_mask_; }
+    /// Gets the default gateway for this module.
+    const IpAddressField& defaultGateway() const { return default_gateway_; }
     /// Indicates if the module should save the current values of all of its settings.
     const FlagField& saveCurrentSettings() const { return save_current_settings_; }
 
@@ -520,9 +660,33 @@ protected:
   private:
     Actuator actuator_;
     Imu imu_;
-
     StringField name_;
     StringField family_;
+    StringField electrical_type_;
+    StringField electrical_revision_;
+    StringField mechanical_type_;
+    StringField mechanical_revision_;
+    StringField firmware_type_;
+    StringField firmware_revision_;
+    StringField user_settings_bytes_1_;
+    StringField user_settings_bytes_2_;
+    StringField user_settings_bytes_3_;
+    StringField user_settings_bytes_4_;
+    StringField user_settings_bytes_5_;
+    StringField user_settings_bytes_6_;
+    StringField user_settings_bytes_7_;
+    StringField user_settings_bytes_8_;
+    FloatField user_settings_float_1_;
+    FloatField user_settings_float_2_;
+    FloatField user_settings_float_3_;
+    FloatField user_settings_float_4_;
+    FloatField user_settings_float_5_;
+    FloatField user_settings_float_6_;
+    FloatField user_settings_float_7_;
+    FloatField user_settings_float_8_;
+    IpAddressField ip_address_;
+    IpAddressField subnet_mask_;
+    IpAddressField default_gateway_;
     FlagField save_current_settings_;
   };
 
@@ -587,6 +751,12 @@ public:
   const StringField& serial() const { return serial_; }
   /// The module's LED.
   const LedField& led() const { return led_; }
+  /// The number of total seconds the module has been sent commands; returned by
+  /// RuntimeData "Extra" info request.
+  const UInt64Field& secondsCommanded() const { return seconds_commanded_; }
+  /// The number of total seconds the module has been on; returned by
+  /// RuntimeData "Extra" info request.
+  const UInt64Field& secondsOn() const { return seconds_on_; }
 
   /**
    * Disable copy constructor/assignment operators
@@ -603,6 +773,8 @@ private:
 
   StringField serial_;
   LedField led_;
+  UInt64Field seconds_commanded_;
+  UInt64Field seconds_on_;
 };
 
 } // namespace hebi

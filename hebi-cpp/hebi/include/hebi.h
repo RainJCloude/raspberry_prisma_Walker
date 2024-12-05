@@ -103,6 +103,15 @@ typedef enum HebiCommandFloatField {
   HebiCommandFloatEffortLimitMax, /// The firmware safety limit for the maximum allowed effort.
   HebiCommandFloatMotorFocId, /// The i_d feedback term of the field-oriented control loop running on the motor.
   HebiCommandFloatMotorFocIq, /// The i_q feedback term of the field-oriented control loop running on the motor.
+  HebiCommandFloatUserSettingsFloat1, /// Sets the value of the user setting float field "1"
+  HebiCommandFloatUserSettingsFloat2, /// Sets the value of the user setting float field "2"
+  HebiCommandFloatUserSettingsFloat3, /// Sets the value of the user setting float field "3"
+  HebiCommandFloatUserSettingsFloat4, /// Sets the value of the user setting float field "4"
+  HebiCommandFloatUserSettingsFloat5, /// Sets the value of the user setting float field "5"
+  HebiCommandFloatUserSettingsFloat6, /// Sets the value of the user setting float field "6"
+  HebiCommandFloatUserSettingsFloat7, /// Sets the value of the user setting float field "7"
+  HebiCommandFloatUserSettingsFloat8, /// Sets the value of the user setting float field "8"
+  HebiCommandFloatOffsetReferencePosition, /// Offset the internal encoder reference offset so that the current position changes by the given reference offset command
 } HebiCommandFloatField;
 
 typedef enum HebiCommandHighResAngleField {
@@ -115,6 +124,11 @@ typedef enum HebiCommandNumberedFloatField {
   HebiCommandNumberedFloatDebug, /// Values for internal debug functions (channel 1-9 available).
 } HebiCommandNumberedFloatField;
 
+typedef enum HebiCommandUInt64Field {
+  HebiCommandUInt64IpAddress, /// Static IP address to set on the module (or 0 for DHCP)
+  HebiCommandUInt64SubnetMask, /// Subnet mask to set on the module (in conjunction with a static IP)
+} HebiCommandUInt64Field;
+
 typedef enum HebiCommandBoolField {
   HebiCommandBoolPositionDOnError, /// Controls whether the Kd term uses the "derivative of error" or "derivative of measurement." When the setpoints have step inputs or are noisy, setting this to @c false can eliminate corresponding spikes or noise in the output.
   HebiCommandBoolVelocityDOnError, /// Controls whether the Kd term uses the "derivative of error" or "derivative of measurement." When the setpoints have step inputs or are noisy, setting this to @c false can eliminate corresponding spikes or noise in the output.
@@ -126,6 +140,14 @@ typedef enum HebiCommandStringField {
   HebiCommandStringName, /// The name for this module. The string must be null-terminated and less than 21 characters.
   HebiCommandStringFamily, /// The family for this module. The string must be null-terminated and less than 21 characters.
   HebiCommandStringAppendLog, /// Appends to the current log message on the module.
+  HebiCommandStringUserSettingsBytes1, /// Sets the value of the user setting bytes field "1"
+  HebiCommandStringUserSettingsBytes2, /// Sets the value of the user setting bytes field "2"
+  HebiCommandStringUserSettingsBytes3, /// Sets the value of the user setting bytes field "3"
+  HebiCommandStringUserSettingsBytes4, /// Sets the value of the user setting bytes field "4"
+  HebiCommandStringUserSettingsBytes5, /// Sets the value of the user setting bytes field "5"
+  HebiCommandStringUserSettingsBytes6, /// Sets the value of the user setting bytes field "6"
+  HebiCommandStringUserSettingsBytes7, /// Sets the value of the user setting bytes field "7"
+  HebiCommandStringUserSettingsBytes8, /// Sets the value of the user setting bytes field "8"
 } HebiCommandStringField;
 
 typedef enum HebiCommandFlagField {
@@ -301,12 +323,28 @@ typedef enum HebiInfoFloatField {
   HebiInfoFloatVelocityLimitMax, /// The firmware safety limit for the maximum allowed velocity.
   HebiInfoFloatEffortLimitMin, /// The firmware safety limit for the minimum allowed effort.
   HebiInfoFloatEffortLimitMax, /// The firmware safety limit for the maximum allowed effort.
+  HebiInfoFloatUserSettingsFloat1, /// Gets the value of the user setting float field "1" (if requested + exists)
+  HebiInfoFloatUserSettingsFloat2, /// Gets the value of the user setting float field "2" (if requested + exists)
+  HebiInfoFloatUserSettingsFloat3, /// Gets the value of the user setting float field "3" (if requested + exists)
+  HebiInfoFloatUserSettingsFloat4, /// Gets the value of the user setting float field "4" (if requested + exists)
+  HebiInfoFloatUserSettingsFloat5, /// Gets the value of the user setting float field "5" (if requested + exists)
+  HebiInfoFloatUserSettingsFloat6, /// Gets the value of the user setting float field "6" (if requested + exists)
+  HebiInfoFloatUserSettingsFloat7, /// Gets the value of the user setting float field "7" (if requested + exists)
+  HebiInfoFloatUserSettingsFloat8, /// Gets the value of the user setting float field "8" (if requested + exists)
 } HebiInfoFloatField;
 
 typedef enum HebiInfoHighResAngleField {
   HebiInfoHighResAnglePositionLimitMin, /// The firmware safety limit for the minimum allowed position.
   HebiInfoHighResAnglePositionLimitMax, /// The firmware safety limit for the maximum allowed position.
 } HebiInfoHighResAngleField;
+
+typedef enum HebiInfoUInt64Field {
+  HebiInfoUInt64IpAddress, /// The IP address of the module
+  HebiInfoUInt64SubnetMask, /// Subnet mask of the module
+  HebiInfoUInt64DefaultGateway, /// Default gateway of the module
+  HebiInfoUInt64RuntimeSecondsCommanded, /// How many seconds the module has been commanded for
+  HebiInfoUInt64RuntimeSecondsOn, /// How many seconds the module has been on for
+} HebiInfoUInt64Field;
 
 typedef enum HebiInfoBoolField {
   HebiInfoBoolPositionDOnError, /// Controls whether the Kd term uses the "derivative of error" or "derivative of measurement." When the setpoints have step inputs or are noisy, setting this to @c false can eliminate corresponding spikes or noise in the output.
@@ -319,6 +357,20 @@ typedef enum HebiInfoStringField {
   HebiInfoStringName, /// The name for this module. The string must be null-terminated and less than 21 characters.
   HebiInfoStringFamily, /// The family for this module. The string must be null-terminated and less than 21 characters.
   HebiInfoStringSerial, /// Gets the serial number for this module (e.g., X5-0001).
+  HebiInfoStringElectricalType, /// Gets the electrical type for this module
+  HebiInfoStringElectricalRevision, /// Gets the electrical revision for this module
+  HebiInfoStringMechanicalType, /// Gets the mechanical type for this module
+  HebiInfoStringMechanicalRevision, /// Gets the mechanical revision for this module
+  HebiInfoStringFirmwareType, /// Gets the firmware type for this module
+  HebiInfoStringFirmwareRevision, /// Gets the firmware revision for this module
+  HebiInfoStringUserSettingsBytes1, /// Gets the value of the user setting bytes field "1" (if requested + exists)
+  HebiInfoStringUserSettingsBytes2, /// Gets the value of the user setting bytes field "2" (if requested + exists)
+  HebiInfoStringUserSettingsBytes3, /// Gets the value of the user setting bytes field "3" (if requested + exists)
+  HebiInfoStringUserSettingsBytes4, /// Gets the value of the user setting bytes field "4" (if requested + exists)
+  HebiInfoStringUserSettingsBytes5, /// Gets the value of the user setting bytes field "5" (if requested + exists)
+  HebiInfoStringUserSettingsBytes6, /// Gets the value of the user setting bytes field "6" (if requested + exists)
+  HebiInfoStringUserSettingsBytes7, /// Gets the value of the user setting bytes field "7" (if requested + exists)
+  HebiInfoStringUserSettingsBytes8, /// Gets the value of the user setting bytes field "8" (if requested + exists)
 } HebiInfoStringField;
 
 typedef enum HebiInfoFlagField {
@@ -346,6 +398,10 @@ typedef enum HebiInfoLedField {
   HebiInfoLedLed, /// The module's LED.
 } HebiInfoLedField;
 
+static const uint64_t HebiInfoExtraFieldsEthernetInfo = 1;
+static const uint64_t HebiInfoExtraFieldsUserData = (HebiInfoExtraFieldsEthernetInfo << 1);
+static const uint64_t HebiInfoExtraFieldsFirmwareInfo = (HebiInfoExtraFieldsUserData << 1);
+static const uint64_t HebiInfoExtraFieldsRuntimeData = (HebiInfoExtraFieldsFirmwareInfo << 1);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// RobotModel Enums
@@ -402,7 +458,13 @@ typedef enum HebiActuatorType {
   HebiActuatorTypeX8_16,
   HebiActuatorTypeR8_3,
   HebiActuatorTypeR8_9,
-  HebiActuatorTypeR8_16
+  HebiActuatorTypeR8_16,
+  HebiActuatorTypeT5_1,
+  HebiActuatorTypeT5_4,
+  HebiActuatorTypeT5_9,
+  HebiActuatorTypeT8_3,
+  HebiActuatorTypeT8_9,
+  HebiActuatorTypeT8_16
 } HebiActuatorType;
 
 /**
@@ -621,6 +683,7 @@ typedef struct HebiRobotModelElementMetadata_ {
     };
     struct /*Joint Type */ {
       HebiJointType joint_type_;
+      double gear_ratio_;
     };
     struct /*Link Type*/ {
       HebiLinkType link_type_;
@@ -849,8 +912,8 @@ typedef struct HebiInfoMetadata_ {
  *               to which to restrict the module discovery. The contents
  *               of the strings must be in human readable
  *               order (_e.g._, "192.168.1.0").
- *               If this parameter is null, then all interfaces besides
- *               the loopback interface are used to discover modules.
+ *               If this parameter is null, then all interfaces are used
+ *               to discover modules.
  *                                       
  * \param ifaces_length the length of the buffer `ifaces`. This must be zero
  *                      if `ifaces` is null.
@@ -1217,13 +1280,13 @@ HebiStatusCode hebiGroupSendCommand(HebiGroupPtr group, HebiGroupCommandPtr comm
  *
  * \param group Which group the command lifetime is being set for.
  * \param lifetime_ms The number of milliseconds which the command 'lives' for.
- * Setting a value less than or equal to '0' disables command lifetime. When
- * disabled, the hardware will continue to execute the last sent command.
- * Setting a value above the accepted maximum will set the lockout to the
- * maximum value.
+ * Setting a value of '-1' sets infinite command lifetime, and setting '0'
+ * disables command lifetime. When disabled, the hardware will continue to execute
+ * the last sent command. Setting a value below -1 or above the accepted maximum will
+ * return an error.
  *
  * \returns HebiStatusSuccess if command lifetime successfully set, or a failure code if
- * value was outside of accepted range (higher than supported maximum or negative).
+ * value was outside of accepted range (higher than supported maximum or below -1).
  */
 HebiStatusCode hebiGroupSetCommandLifetime(HebiGroupPtr group, int32_t lifetime_ms);
 
@@ -1338,6 +1401,69 @@ HebiStatusCode hebiGroupGetNextFeedback(HebiGroupPtr group, HebiGroupFeedbackPtr
  * (i.e., connection error or timeout waiting for response).
  */
 HebiStatusCode hebiGroupRequestInfo(HebiGroupPtr group, HebiGroupInfoPtr info, int32_t timeout_ms);
+
+/**
+ * \brief Requests info from the group, and writes it to the provided info
+ * object.  Specifically requests specific extra fields
+ *
+ * Warning: if successful, other data in the provided 'Info' object is erased!
+ *
+ * \param group The group to send this command to.
+ * \param info On success, the info read from the group is written into this
+ * structure.
+ * \param extra_fields A bitfield of which extra fields to request.  Note that some
+ * of these fields may significantly increase the packet size, and so it is not
+ * recommended to call this at high rates. These use the HebiInfoExtraFields values, so
+ * to request ethernet and user setting information, you would set extra_fields to
+ * `((uint64_t)HebiInfoExtraFieldsEthernet) | ((uint64_t)HebiInfoExtraFielsUserSettings)`.
+ * \param timeout_ms Indicates how many milliseconds to wait for a response
+ * after sending a packet.  For typical networks, '15' ms is a value that can be
+ * reasonably expected to encompass the time required for a round-trip
+ * transmission.
+ *
+ * \returns HebiStatusSuccess if info was received, or a failure code if not
+ * (i.e., connection error or timeout waiting for response).
+ */
+HebiStatusCode hebiGroupRequestInfoExtra(HebiGroupPtr group, HebiGroupInfoPtr info, uint64_t extra_fields, int32_t timeout_ms);
+
+/**
+ * \brief Sends a layout file to all group members, and requesting delivery acknowledgement.
+ * Designed for use with Mobile IO devices, typically as the only group element.
+ *
+ * \param group The group containing the Mobile IO device to set the layout for. 
+ * \param file The path to the file to load for reading contents from the group.
+ * \param version_major The major component of the layout format version number.
+ * \param version_minor The minor component of the layout format version number.
+ * \param timeout_ms Indicates how many milliseconds to wait for a response
+ * after sending a packet.  For typical networks, '15' ms is a value that can be
+ * reasonably expected to encompass the time required for a round-trip
+ * transmission.
+ * \returns HebiStatusSuccess if layout was successfully sent and an acknowledgement
+ * received; a failure code if not.  Note that this return code may change to include
+ * failures separately if Mobile IO device rejects layout (currently unreported), if
+ * file is not found, etc.
+ */
+HebiStatusCode hebiGroupSendLayout(HebiGroupPtr group, const char* file, int version_major, int version_minor, int32_t timeout_ms);
+
+/**
+ * \brief Sends a layout file to all group members, and requesting delivery acknowledgement.
+ * Designed for use with Mobile IO devices, typically as the only group element.
+ *
+ * \param group The group containing the Mobile IO device to set the layout for. 
+ * \param buffer A buffer containing the contents of the layout file.
+ * \param buffer_size The number of bytes in the buffer.
+ * \param version_major The major component of the layout format version number.
+ * \param version_minor The minor component of the layout format version number.
+ * \param timeout_ms Indicates how many milliseconds to wait for a response
+ * after sending a packet.  For typical networks, '15' ms is a value that can be
+ * reasonably expected to encompass the time required for a round-trip
+ * transmission.
+ * \returns HebiStatusSuccess if layout was successfully sent and an acknowledgement
+ * received; a failure code if not.  Note that this return code may change to include
+ * failures separately if Mobile IO device rejects layout (currently unreported), if
+ * file is not found, etc.
+ */
+HebiStatusCode hebiGroupSendLayoutBuffer(HebiGroupPtr group, const char* buffer, size_t buffer_size, int version_major, int version_minor, int32_t timeout_ms);
 
 /**
  * \brief Starts logging data to a file.
@@ -1844,6 +1970,7 @@ size_t hebiInfoGetSize();
  * Retrieve the static metadata for all Info instances
  */
 void hebiInfoGetMetadata(HebiInfoMetadata* metadata);
+
 ////////////////////////////////////////////////////////////////////////////////
 /// RobotModel API
 ////////////////////////////////////////////////////////////////////////////////
@@ -2180,11 +2307,29 @@ HebiStatusCode hebiRobotModelGetElementMetadata(HebiRobotModelPtr model, size_t 
  * \param length the length of the provided buffer. After calling this function, the value dereferenced will be
  * updated with the length of the string plus the null character. This argument must not be NULL.
  *
- * \returns HebiStatusSuccess on success, HebiStatusBufferTooSmall if the provided buffer is too small, or
- * HebiStatusInvalidArgument if the length parameter is null
+ * \returns HebiStatusSuccess on success, HebiStatusBufferTooSmall if the provided buffer is too small,
+ * HebiStatusInvalidArgument if the length parameter is null, or HebiStatusArgumentOutOfRange if the index is
+ * invalid.
  */
 HebiStatusCode hebiRobotModelGetMeshPath(HebiRobotModelPtr model, size_t index, char* buffer,
                                          size_t* length);
+
+/**
+ * Get the index of an element in the RobotModel with the given tag. On success, `index_out` is set
+ * to the index value.
+ *
+ * \param model A valid HebiRobotModel object.
+ * \param tag_utf8 A utf-8 encoded tag to search for.  Does not need to be null terminated; must be
+ * at least 'tag_len' long.
+ * \param tag_len The length of the tag_utf8 string to be checked.  In bytes, not utf8 characters.
+ * \param index_out On success, the index of the robot model element with this tag is written to this
+ * variable.
+ *
+ * \returns HebiStatusSuccess on success, HebiStatusInvalidArgument if parameters are null, or
+ * HebiStatusArgumentOutOfRange if the tag is not found.
+ */
+HebiStatusCode hebiRobotModelGetElementIndexFromTag(HebiRobotModelPtr model, const char* tag_utf8,
+                                                    size_t tag_len, size_t* index_out);
 
 /**
  * \brief Add an element to a parent element connected to a robot model object.
@@ -2735,6 +2880,13 @@ const char* hebiSafetyParametersGetLastError(void);
  * a parameter is NULL.
  */
 HebiStatusCode hebiGetLibraryVersion(int32_t* major, int32_t* minor, int32_t* revision);
+
+/**
+ * \brief Get the build number version of the library.
+ *
+ * \return 0 for a release build of the library, or the nightly dev build number otherwise.
+ */
+int32_t hebiGetLibraryVersionBuild();
 
 /**
  * \brief Frees all resources created by the library.  Note: any calls to the

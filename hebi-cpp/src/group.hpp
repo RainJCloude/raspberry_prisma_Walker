@@ -16,17 +16,32 @@ class GroupCommand;
 class GroupFeedback;
 class GroupInfo;
 
+namespace util {
+
+class MobileIO;
+
+} // namespace util
+
 /**
  * \brief Definition of a callback function for GroupFeedback returned from a
  * Group of modules.
  */
 using GroupFeedbackHandler = std::function<void(const GroupFeedback&)>;
 
+enum InfoExtraFields : uint64_t {
+  EthernetInfo = HebiInfoExtraFieldsEthernetInfo, // IP address, subnet, etc.
+  UserData = HebiInfoExtraFieldsUserData, // user data bytes and floats
+  FirmwareInfo = HebiInfoExtraFieldsFirmwareInfo, // mechanical/electrical revs, etc
+  RuntimeData = HebiInfoExtraFieldsRuntimeData, // time on, time commanded
+};
+
 /**
  * \brief Represents a group of physical HEBI modules, and allows Command,
- * Feedback, and Info objects to be sent to and recieved from the hardware.
+ * Feedback, and Info objects to be sent to and received from the hardware.
  */
 class Group final {
+  friend class util::MobileIO;
+
 private:
   /**
    * C-style group object
@@ -87,7 +102,7 @@ public:
   /**
    * \brief Returns the number of modules in the group
    */
-  int size();
+  int size() const;
 
   /**
    * \brief Sets the command lifetime for the modules in this group.
@@ -100,6 +115,13 @@ public:
    * See docs.hebi.us for more information.
    */
   bool setCommandLifetimeMs(int32_t ms);
+
+  /**
+   * \brief Returns the command lifetime for the modules in this group.
+   *
+   * See setCommandLifetimeMs for more information.
+  */
+  int32_t getCommandLifetimeMs() const;
 
   /**
    * \brief Send a command to the given group without requesting an
@@ -181,6 +203,16 @@ public:
   bool requestInfo(GroupInfo& info, int32_t timeout_ms = DEFAULT_TIMEOUT_MS);
 
   /**
+   * \brief Request info from the group, and store it in the passed-in info
+   * object. Include extra fields
+   *
+   * \returns true if the request was successful within the specified timeout;
+   * in this case 'info' has been updated. Otherwise, returns false and does
+   * not update 'info'.
+   */
+  bool requestInfoExtra(GroupInfo& info, InfoExtraFields extra_fields, int32_t timeout_ms = DEFAULT_TIMEOUT_MS);
+
+  /**
    * \brief Starts log (stopping any active log).
    *
    * \param dir The relative or absolute path to the directory to log in. To
@@ -188,7 +220,7 @@ public:
    *
    * \returns the path to the log file, otherwise an empty string on failure
    */
-  std::string startLog(const std::string& dir);
+  std::string startLog(const std::string& dir) const;
 
   /**
    * \brief Starts log (stopping any active log).
@@ -200,7 +232,7 @@ public:
    *
    * \returns the path to the log file, otherwise an empty string on failure
    */
-  std::string startLog(const std::string& dir, const std::string& file);
+  std::string startLog(const std::string& dir, const std::string& file) const;
 
   /**
    * \brief Stops any active log.
@@ -208,7 +240,7 @@ public:
    * \returns shared pointer to the created log file.
    * If the file was not successfully created, this will return null.
    */
-  std::shared_ptr<LogFile> stopLog();
+  std::shared_ptr<LogFile> stopLog() const;
 
   /**
    * \brief Sets the frequency of the internal feedback request + callback thread.
@@ -223,7 +255,7 @@ public:
    *
    * \returns The current feedback request loop frequency (in Hz).
    */
-  float getFeedbackFrequencyHz();
+  float getFeedbackFrequencyHz() const;
   /**
    * \brief Adds a handler function to be called by the internal feedback request
    * thread.

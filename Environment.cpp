@@ -139,7 +139,6 @@ class ENVIRONMENT {
 		//pTarget3_.tail(nJoints_) << std::sin(2*M_PI*5000*t), std::sin(2*M_PI*5000*t + 0.25), 0;
 		//t+=control_dt_;
 
-		std::cout<<index_imitation_<<std::endl;
 		if(ActuatorConnected_){
 			bool commandInPosition = true;
 			if(commandInPosition)
@@ -149,11 +148,7 @@ class ENVIRONMENT {
 				motors->sendCommand(linkTorque_.tail(nJoints_), false);
 		}
 		
-		std::cout<<"command sent"<<std::endl;
-
 		updateObservation();
-				std::cout<<"Aggiorno le osservazioni"<<std::endl;
-
 		incrementIndices();
 		
 	}
